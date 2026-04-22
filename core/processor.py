@@ -19,7 +19,7 @@ def parse_with_ollama(raw_text):
     TEXT: {raw_text}
     
     CRITICAL INSTRUCTION: 
-    - Look closely at the 'total' amount. 
+    - Look closely at the 'total' amount 
     - If you see a comma used as a decimal (e.g., 9,58), convert it to a period (9.58).
     - Ensure the 'total' is a valid FLOAT number.
 
