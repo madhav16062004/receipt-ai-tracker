@@ -3,3 +3,7 @@ easyocr
 ollama
 pandas
 pillow
+chromadb
+langgraph
+langchain-ollama 
+langchain-community
