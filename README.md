@@ -28,7 +28,7 @@ The project is structured with a distinct backend and frontend:
 
 ---
 
-## 🛠️ Installation & Setup
+## Installation & Setup
 
 Follow these steps to run the application on your local machine.
 
