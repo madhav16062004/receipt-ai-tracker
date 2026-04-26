@@ -84,7 +84,7 @@ with st.sidebar:
         st.toast("Databases completely wiped!")
         st.rerun()
 
-    st.caption("Powered by EasyOCR • Ollama • LangGraph")
+    st.caption("Powered by EasyOCR • Gemini • LangGraph")
 
 
 # ──────────────────────────────────────────────
@@ -207,7 +207,7 @@ with tab_chat:
             # Generate agent response
             with st.chat_message("assistant"):
                 if st.session_state.agent is None:
-                    response = " Agent is not initialized. Make sure Ollama is running with `llama3.2`."
+                    response = " Agent is not initialized. Make sure your GOOGLE_API_KEY is set in the .env file."
                 else:
                     with st.spinner(" Thinking..."):
                         response = run_agent(

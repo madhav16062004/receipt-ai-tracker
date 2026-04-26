@@ -143,7 +143,7 @@ def parse_with_ollama(raw_text: str) -> dict | None:
 
     try:
         response = client.chat(
-            model="llama3.2",
+            model="qwen2.5:3b-instruct",
             messages=[{"role": "user", "content": prompt}],
         )
 
