@@ -20,8 +20,8 @@ from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from core.processor import extract_text_from_image, parse_with_ollama
-from core.memory import (
+from backend.processor import extract_text_from_image, parse_with_ollama
+from backend.memory import (
     init_dbs,
     save_receipt_data,
     get_all_receipts,
@@ -29,7 +29,7 @@ from core.memory import (
     get_total_spend,
     reset_dbs,
 )
-from core.agent import build_agent, run_agent
+from backend.agent import build_agent, run_agent
 
 # ──────────────────────────────────────────────
 # App Setup

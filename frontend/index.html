@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Expense Chatbot — Smart Receipt Tracking</title>
+  <meta name="description" content="AI-powered expense tracker with receipt OCR, smart categorization, and natural language analytics." />
+  <link rel="stylesheet" href="/static/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>" />
+</head>
+<body>
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <div class="app-layout">
+    <!-- ─── Sidebar ─── -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div>
+          <h1>ExpenseAI</h1>
+          <span class="version">Gemini • LangGraph</span>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card accent">
+          <div class="stat-label">This Month</div>
+          <div class="stat-value" id="statMonth">₹ 0.00</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">All Time</div>
+          <div class="stat-value" id="statAllTime">₹ 0.00</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Receipts</div>
+          <div class="stat-value" id="statCount">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Categories</div>
+          <div class="stat-value" id="statCategories">0</div>
+        </div>
+      </div>
+
+      <!-- Category Breakdown -->
+      <div class="sidebar-section-title">Spending by Category</div>
+      <div class="category-chart" id="categoryChart">
+        <div style="color: var(--text-muted); font-size: 0.8rem; text-align: center; padding: 12px 0;">No data yet</div>
+      </div>
+
+      <!-- Actions -->
+      <div class="sidebar-actions">
+        <button class="btn btn-secondary btn-block" onclick="resetAgent()"> Reset Agent</button>
+        <button class="btn btn-secondary btn-block" onclick="clearChat()"> Clear Chat</button>
+        <button class="btn btn-danger btn-block" onclick="resetDatabase()"> Reset Database</button>
+      </div>
+
+      <div class="sidebar-footer">
+        Powered by EasyOCR • Gemini • LangGraph
+      </div>
+    </aside>
+
+    <!-- ─── Main Content ─── -->
+    <main class="main-content">
+      <!-- Header -->
+      <header class="page-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+          <h2>AI Expense Chatbot</h2>
+        </div>
+      </header>
+
+      <!-- Tabs -->
+      <nav class="tab-bar">
+        <button class="tab-btn active" data-tab="upload" onclick="switchTab('upload')">Upload Receipt</button>
+        <button class="tab-btn" data-tab="chat" onclick="switchTab('chat')"> Chat</button>
+        <button class="tab-btn" data-tab="history" onclick="switchTab('history')">History</button>
+      </nav>
+
+      <!-- ─── Upload Tab ─── -->
+      <section class="tab-panel active" id="panel-upload">
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="fileInput" accept="image/png,image/jpeg,image/jpg" />
+          <h3>Drop your receipt here</h3>
+          <p>or click to browse • PNG, JPG up to 10MB</p>
+        </div>
+
+        <div class="processing-section" id="processingSection">
+          <!-- Processing Steps -->
+          <div class="processing-steps">
+            <div class="step" id="stepOcr">
+         
+              <div class="step-text">Reading text (OCR)</div>
+            </div>
+            <div class="step" id="stepAi">
+              
+              <div class="step-text">AI Analysis</div>
+            </div>
+            <div class="step" id="stepDone">
+         
+              <div class="step-text">Ready to save</div>
+            </div>
+          </div>
+
+          <!-- Result -->
+          <div class="result-grid" id="resultGrid" style="display: none;">
+            <div class="receipt-preview">
+              <img id="receiptPreview" src="" alt="Receipt preview" />
+            </div>
+            <div class="extracted-data">
+              <h3>Extracted Data</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Merchant</label>
+                  <input type="text" id="fldMerchant" />
+                </div>
+                <div class="form-group">
+                  <label>Date (YYYY-MM-DD)</label>
+                  <input type="text" id="fldDate" />
+                </div>
+                <div class="form-group">
+                  <label>Total Amount</label>
+                  <input type="number" id="fldTotal" step="0.01" />
+                </div>
+                <div class="form-group">
+                  <label>Currency</label>
+                  <input type="text" id="fldCurrency" />
+                </div>
+                <div class="form-group">
+                  <label>Category</label>
+                  <select id="fldCategory">
+                    <option value="Food">Food</option>
+                    <option value="Transport">Transport</option>
+                    <option value="Shopping">Shopping</option>
+                    <option value="Utilities">Utilities</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div class="form-group raw-text-box">
+                  <label>Raw OCR Text</label>
+                  <textarea id="fldRawText" readonly></textarea>
+                </div>
+              </div>
+              <div style="margin-top: 20px; display: flex; gap: 12px;">
+                <button class="btn btn-primary" onclick="saveReceipt()">Save to Database</button>
+                <button class="btn btn-secondary" onclick="resetUpload()">↩ Upload Another</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Error State -->
+          <div id="uploadError" style="display: none; margin-top: 16px; padding: 16px; background: var(--danger-bg); border: 1px solid rgba(239,68,68,0.2); border-radius: var(--radius-md); color: var(--danger); font-size: 0.9rem;"></div>
+        </div>
+      </section>
+
+      <!-- ─── Chat Tab ─── -->
+      <section class="tab-panel" id="panel-chat">
+        <div class="chat-container">
+          <div class="chat-messages" id="chatMessages">
+            <div class="chat-empty-state" id="chatEmptyState">
+              <p>Ask me anything about your expenses</p>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">e.g. "How much did I spend on Food?" or "What's my biggest expense?"</p>
+            </div>
+          </div>
+          <div class="typing-indicator" id="typingIndicator">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+          </div>
+          <div class="chat-input-bar">
+            <input type="text" id="chatInput" placeholder="Ask about your expenses..." onkeydown="if(event.key==='Enter')sendChat()" />
+            <button class="btn btn-primary btn-icon" id="chatSendBtn" onclick="sendChat()">Send</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── History Tab ─── -->
+      <section class="tab-panel" id="panel-history">
+        <div class="history-table-wrapper" id="historyWrapper">
+          <div class="empty-state" id="historyEmpty">
+            <p>No receipts found. Upload your first receipt to get started!</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
