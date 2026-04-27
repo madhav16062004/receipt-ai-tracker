@@ -7,9 +7,9 @@ Features:
 """
 
 import streamlit as st
-from core.processor import extract_text_from_image, parse_with_ollama
-from core.memory import init_dbs, save_receipt_data, get_all_receipts, get_current_month_total, get_total_spend, reset_dbs
-from core.agent import build_agent, run_agent
+from backend.processor import extract_text_from_image, parse_with_ollama
+from backend.memory import init_dbs, save_receipt_data, get_all_receipts, get_current_month_total, get_total_spend, reset_dbs
+from backend.agent import build_agent, run_agent
 import os
 import tempfile
 
